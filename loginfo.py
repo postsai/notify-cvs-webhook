@@ -11,6 +11,8 @@ import sys
 import os
 import getopt
 import datetime
+import httplib
+import urlparse
 
 def escape(data):
     return data.replace("\\", "\\\\").replace("\"", "\\\"")
@@ -28,9 +30,8 @@ class CvsReader:
 
         try:
             opts, args = getopt.getopt(sys.argv[1:], "", ["default-email-domain=", "url=", "repository=", "home-url=", "commitid=", "folder="])
-        except getopt.GetoptError as err:
-            # print help information and exit:
-            print str(err) # will print something like "option -a not recognized"
+        except:
+            print "Invalid command line arguments"
             sys.exit(2)
 
         self.meta["default_email_domain"] = "example.com"
@@ -160,9 +161,14 @@ class OutputGenerator:
 
     def write_revision_map(self, commit):
         self.output += "{"
+        first = True
         for filename, revision in commit["revisions"].items():
-            self.output += "\"" + escape(filename) + "\": \"" + escape(revision) + "\",\n"
-        self.output += "},"
+            if first:
+                first = False
+            else:
+                self.output += ","
+            self.output += "\"" + escape(filename) + "\": \"" + escape(revision) + "\"\n"
+        self.output += "}"
 
     def write_commit(self, commit):
         self.output += "{\n"
@@ -182,7 +188,7 @@ class OutputGenerator:
         self.output += "\"revisions\": "
         self.write_revision_map(commit)
         self.output += "\n"
-        self.output += "},\n"
+        self.output += "}\n"
 
     def write_commits(self):
         self.output += "\"commits\": [\n"
@@ -191,6 +197,7 @@ class OutputGenerator:
         self.output += "],\n"
         self.output += "\"head_commit\":\n"
         self.write_commit(self.commits[0])
+        self.output += ",\n"
 
     def write_repository(self):
         self.output += "\"repository\": {\n"
@@ -212,7 +219,10 @@ def main(argv=None):
     
     output = OutputGenerator(reader.meta, reader.commits)
     output.write()
-    print(output.output)
+
+    for url in reader.urls:
+        u = urlparse.urlparse(url)
+        httplib.HTTPConnection(u.hostname, u.port).request("POST", url, output.output, {"Content-Type": "application/json"})
 
 if __name__ == "__main__":
     sys.exit(main())
