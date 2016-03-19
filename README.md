@@ -1,4 +1,4 @@
-notify-cvs-webhoo
+notify-cvs-webhook
 -
 Github style webhooks for CVS.
 
