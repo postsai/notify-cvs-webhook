@@ -75,5 +75,8 @@ Sample output
          "url": "https://cvs.example.com/viewvc/"
     }
 }
-
 ```
+
+Legal
+-
+(C) Copyright 2016 Postsai. notify-cvs-webhook is released as Free and Open Source Software under [MIT](https://raw.githubusercontent.com/postsai/postsai/master/LICENSE.txt) license.
