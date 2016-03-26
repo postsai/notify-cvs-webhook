@@ -222,7 +222,11 @@ def main(argv=None):
 
     for url in reader.urls:
         u = urlparse.urlparse(url)
-        httplib.HTTPConnection(u.hostname, u.port).request("POST", url, output.output, {"Content-Type": "application/json"})
+        if u.scheme == "https":
+            con = httplib.HTTPSConnection(u.hostname, u.port)
+        else:
+            con = httplib.HTTPConnection(u.hostname, u.port)
+        con.request("POST", url, output.output, {"Content-Type": "application/json"})
 
 if __name__ == "__main__":
     sys.exit(main())
