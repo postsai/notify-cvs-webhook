@@ -10,7 +10,7 @@ Checkout your CVSROOT module and add the following line at the end of `loginfo`:
 
 ``` bash
 ALL /usr/local/notify-cvs-webhook/loginfo.py --url="https://example.com/webhook" 
-    --home-url="https://cvs.example.com" --repository=myrepo 
+    --home-url="https://cvs.example.com/cgi-bin/viewvc.cgi" --repository=myrepo 
     --default-email-domain=example.com --commitid=%I --folder=%p %{sVv}
 ``` 
 
