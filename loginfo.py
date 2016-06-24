@@ -7,11 +7,12 @@
 @license:    MIT
 '''
 
-import sys
-import os
-import getopt
+import base64
 import datetime
+import getopt
 import httplib
+import os
+import sys
 import urlparse
 
 def escape(data):
@@ -125,6 +126,9 @@ class CvsReader:
         self.build_commit()
 
 class OutputGenerator:
+    """Generates the payload"""
+
+
     def __init__(self, meta, commits):
         self.meta = meta
         self.commits = commits
@@ -212,7 +216,7 @@ class OutputGenerator:
 
 
 def main(argv=None):
-    '''Command line options.'''
+    '''Command line entry point'''
 
     reader = CvsReader()
     reader.read()
@@ -222,11 +226,26 @@ def main(argv=None):
 
     for url in reader.urls:
         u = urlparse.urlparse(url)
+
+        # Connect to server
         if u.scheme == "https":
             con = httplib.HTTPSConnection(u.hostname, u.port)
         else:
             con = httplib.HTTPConnection(u.hostname, u.port)
-        con.request("POST", url, output.output, {"Content-Type": "application/json"})
+
+        # Send request
+        headers = {"Content-Type": "application/json"}
+        if not u.username == None and not u.password == None:
+            headers["Authorization"] = "Basic " + base64.b64encode(u.username + ":" + u.password)
+        con.request("POST", url, output.output, headers)
+
+        # Verify response
+        response = con.getresponse()
+        if response.status != 200:
+            print(str(response.status) + " " + response.reason)
+            sys.exit(1)
+
+
 
 if __name__ == "__main__":
     sys.exit(main())
