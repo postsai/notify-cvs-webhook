@@ -30,7 +30,7 @@ class CvsReader:
         """parse command line arguments"""
 
         try:
-            opts, args = getopt.getopt(sys.argv[1:], "", ["default-email-domain=", "url=", "repository=", "home-url=", "commitid=", "folder="])
+            opts, args = getopt.getopt(sys.argv[1:], "", ["default-email-domain=", "url=", "repository=", "home-url=", "repository-url=", "commitid=", "folder="])
         except:
             print "Invalid command line arguments"
             sys.exit(2)
@@ -46,6 +46,8 @@ class CvsReader:
                 self.meta["repository"] = a
             elif o == "--home-url":
                 self.meta["home_url"] = a
+            elif o == "--repository-url":
+                self.meta["url"] = a
             elif o == "--commitid":
                 self.meta["commitid"] = a
             elif o == "--folder":
@@ -208,7 +210,7 @@ class OutputGenerator:
         self.output += "\"name\": \"" + escape(self.meta["repository"]) + "\",\n"
         self.output += "\"full_name\": \"" + escape(self.meta["repository"]) + "\",\n"
         self.output += "\"home_url\": \"" + escape(self.meta["home_url"]) + "\",\n"
-        self.output += "\"url\": \"" + escape(self.meta["home_url"]) + "\"\n"
+        self.output += "\"url\": \"" + escape(self.meta["url"]) + "\"\n"
         self.output += "}\n"
 
     def write_footer(self):

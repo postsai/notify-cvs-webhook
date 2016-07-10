@@ -11,8 +11,20 @@ Checkout your CVSROOT module and add the following line at the end of `loginfo`:
 ``` bash
 ALL /usr/local/notify-cvs-webhook/loginfo.py --url="https://example.com/webhook" 
     --home-url="https://cvs.example.com/cgi-bin/viewvc.cgi" --repository=myrepo 
+    --repository-url=":pserver:username:password@cvs.example.com/repository"
     --default-email-domain=example.com --commitid=%I --folder=%p %{sVv}
 ``` 
+
+|Parameter|Description|
+|---|---|
+|`url`| ULR of the destination to call|
+|`home-url`|The web frontend for the CVS repository|
+|`repository`|Name of the repository|
+|`repository-url`|(optional) How the repository may be accessed via CVS, should be an readonly account
+|`default-email-domain`|This domain is appended to all accounts which do not contain a # or @
+|`commitid`|The commitid of the current commit, %I will be replaced by CVS when this script is called
+|`folder`|The folder within the repository, %p will be replaced by CVS when this script is called
+| | Information about revisions and files, %{sVv} will be replaced by CVS when this script is called
 
 
 Sample output
@@ -72,7 +84,7 @@ Sample output
          "name": "local",
          "full_name": "local",
          "home_url": "https://cvs.example.com/viewvc/",
-         "url": "https://cvs.example.com/viewvc/"
+         "url": ":pserver:username:password@cvs.example.com/repository"
     }
 }
 ```
