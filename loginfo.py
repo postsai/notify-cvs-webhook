@@ -12,8 +12,15 @@ import datetime
 import getopt
 import httplib
 import os
+import subprocess
 import sys
 import urlparse
+
+try:
+    from subprocess import DEVNULL # py3k
+except ImportError:
+    DEVNULL = open(os.devnull, 'wb')
+
 
 def escape(data):
     return data.replace("\\", "\\\\").replace("\"", "\\\"")
@@ -53,6 +60,17 @@ class CvsReader:
             elif o == "--folder":
                 self.meta["folder"] = a
         self.args = args
+
+
+    def read_commitid_legacy_support(self):
+        """Very old versions of CVS do not support %I in loginfo.
+           This workaround invokes cvs status to get access to the commitid"""
+        cvs = subprocess.Popen(["/usr/bin/cvs", "status"], stderr=DEVNULL, stdout=subprocess.PIPE)
+        stdout = cvs.communicate()[0];
+        for row in stdout.splitlines():
+            if "Commit Identifier:" in row:
+                self.meta["commitid"] = row.rsplit(None, 1)[-1]
+                break
 
 
     def read_stdin(self):
@@ -122,10 +140,13 @@ class CvsReader:
 
     def read(self):
         self.read_commandline_arguments()
+        if not "commitid" in self.meta:
+            self.read_commitid_legacy_support()
         self.read_stdin()
         self.read_author()
         self.build_file_lists()
         self.build_commit()
+
 
 class OutputGenerator:
     """Generates the payload"""
