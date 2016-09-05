@@ -127,7 +127,7 @@ class CvsReader:
                 commit["revisions"][filename] = new
             elif new == "NONE":
                 commit["removed"].append(filename)
-                commit["revisions"][filename] = self.meta["commitid"] # todo
+                commit["revisions"][filename] = "" # todo
             else:
                 commit["modified"].append(filename)
                 commit["revisions"][filename] = new
