@@ -84,7 +84,7 @@ class CvsReader:
                 if line.find("Log Message:") == 0:
                     wait_for_start_of_message = False
                 elif line.find("      Tag: ") == 0:
-                    self.meta["branch"] = line[11:]
+                    self.meta["branch"] = line[11:].strip(' \t\n\r')
             else:
                 message += line
         self.meta["message"] = message.strip(' \t\n\r')
