@@ -23,7 +23,7 @@ except ImportError:
 
 
 def escape(data):
-    return data.replace("\\", "\\\\").replace("\"", "\\\"")
+    return data.replace("\\", "\\\\").replace("\"", "\\\"").replace("\r", "").replace("\n", "\\n")
 
 class CvsReader:
     def __init__(self):
