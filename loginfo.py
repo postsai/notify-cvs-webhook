@@ -14,6 +14,7 @@ import httplib
 import os
 import subprocess
 import sys
+import time
 import urlparse
 
 try:
@@ -70,7 +71,9 @@ class CvsReader:
         for row in stdout.splitlines():
             if "Commit Identifier:" in row:
                 self.meta["commitid"] = row.rsplit(None, 1)[-1]
-                break
+                return
+
+        self.meta["commitid"] = "S" + str(time.time()) + os.urandom(4).encode("hex")
 
 
     def read_stdin(self):
