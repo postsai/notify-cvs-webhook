@@ -263,7 +263,10 @@ def main(argv=None):
         headers = {"Content-Type": "application/json"}
         if not u.username == None and not u.password == None:
             headers["Authorization"] = "Basic " + base64.b64encode(u.username + ":" + u.password)
-        con.request("POST", url, output.output, headers)
+        url_prefix = u.scheme + "://" + u.hostname + u.path
+        if u.query != "":
+            url_prefix = url_prefix + "?" + u.query
+        con.request("POST", url_prefix, output.output, headers)
 
         # Verify response
         response = con.getresponse()
