@@ -16,15 +16,13 @@ import subprocess
 import sys
 import time
 import urlparse
+import urllib
 
 try:
     from subprocess import DEVNULL # py3k
 except ImportError:
     DEVNULL = open(os.devnull, 'wb')
 
-
-def escape(data):
-    return data.replace("\\", "\\\\").replace("\"", "\\\"").replace("\r", "").replace("\n", "\\n")
 
 class CvsReader:
     def __init__(self):
@@ -168,14 +166,14 @@ class OutputGenerator:
 
     def write_header(self):
         self.output += "{\n"
-        self.output += "\"ref\": \"refs/heads/" + escape(self.meta["branch"]) + "\",\n"
-        self.output += "\"after\": \"" + escape(self.meta["commitid"]) + "\",\n"
+        self.output += "\"ref\": \"refs/heads/" + urllib.quote(self.meta["branch"]) + "\",\n"
+        self.output += "\"after\": \"" + urllib.quote(self.meta["commitid"]) + "\",\n"
 
     def write_user(self):
         self.output += "{\n"
-        self.output += "\"name\": \"" + escape(self.meta["real_name"]) + "\",\n"
-        self.output += "\"email\": \"" + escape(self.meta["email"]) + "\",\n"
-        self.output += "\"username\": \"" + escape(self.meta["username"]) + "\"\n"
+        self.output += "\"name\": \"" + urllib.quote(self.meta["real_name"]) + "\",\n"
+        self.output += "\"email\": \"" + urllib.quote(self.meta["email"]) + "\",\n"
+        self.output += "\"username\": \"" + urllib.quote(self.meta["username"]) + "\"\n"
         self.output += "},\n"
 
     def write_file_list(self, files):
@@ -186,7 +184,7 @@ class OutputGenerator:
                 first = False
             else:
                 self.output += ", "
-            self.output += "\"" + escape(filename) + "\""
+            self.output += "\"" + urllib.quote(filename) + "\""
         self.output += "],"
 
     def write_revision_map(self, commit):
@@ -197,15 +195,15 @@ class OutputGenerator:
                 first = False
             else:
                 self.output += ","
-            self.output += "\"" + escape(filename) + "\": \"" + escape(revision) + "\"\n"
+            self.output += "\"" + urllib.quote(filename) + "\": \"" + urllib.quote(revision) + "\"\n"
         self.output += "}"
 
     def write_commit(self, commit):
         self.output += "{\n"
-        self.output += "\"id\": \"" + escape(commit["commitid"]) + "\",\n"
+        self.output += "\"id\": \"" + urllib.quote(commit["commitid"]) + "\",\n"
         self.output += "\"distinct\": \"true\",\n"
-        self.output += "\"message\": \"" + escape(commit["message"]) + "\",\n"
-        self.output += "\"timestamp\": \"" + escape(commit["timestamp"]) + "\",\n"
+        self.output += "\"message\": \"" + urllib.quote(commit["message"]) + "\",\n"
+        self.output += "\"timestamp\": \"" + urllib.quote(commit["timestamp"]) + "\",\n"
         self.output += "\"author\": "
         self.write_user()
         self.output += "\"committer\": "
@@ -231,10 +229,10 @@ class OutputGenerator:
 
     def write_repository(self):
         self.output += "\"repository\": {\n"
-        self.output += "\"name\": \"" + escape(self.meta["repository"]) + "\",\n"
-        self.output += "\"full_name\": \"" + escape(self.meta["repository"]) + "\",\n"
-        self.output += "\"home_url\": \"" + escape(self.meta["home_url"]) + "\",\n"
-        self.output += "\"url\": \"" + escape(self.meta["url"]) + "\"\n"
+        self.output += "\"name\": \"" + urllib.quote(self.meta["repository"]) + "\",\n"
+        self.output += "\"full_name\": \"" + urllib.quote(self.meta["repository"]) + "\",\n"
+        self.output += "\"home_url\": \"" + urllib.quote(self.meta["home_url"]) + "\",\n"
+        self.output += "\"url\": \"" + urllib.quote(self.meta["url"]) + "\"\n"
         self.output += "}\n"
 
     def write_footer(self):
